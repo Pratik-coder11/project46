@@ -7,6 +7,8 @@ var alien2,alienImage2;
 var alien3,alienImage3;
 var alien;
 var alienGroup;
+var bullet;
+var bullets;
 
 
 function preload(){
@@ -30,6 +32,8 @@ function setup() {
   spaceCraft.scale = 0.2
   spaceCraft.debug = true;
   alienGroup = createGroup();
+
+  bullets = createGroup();
   
 /*
   alien1 = createSprite(800,340,60,60)
@@ -67,11 +71,34 @@ if(ground.x<400){
     spaceCraft.y = spaceCraft.y+5
   }
 
-  if(spaceCraft.isTouching(alienGroup)){
+  if(keyDown("left")){
+    spaceCraft.x = spaceCraft.x-5
+  }
+
+  if(keyDown("right")){
+    spaceCraft.x = spaceCraft.x+5
+  }
+
+  if(keyDown("space")){
+    bullet = createSprite(spaceCraft.x,spaceCraft.y,3,3)
+    bullet.velocityX = 10
+    bullet.shapeColor = "#0827F5"
+    bullets.add(bullet)
+
+  }
+
+  
+
+  if(spaceCraft.bounce(alienGroup)){
+
     if(lives>=0){
       lives = lives-1
     }
   }
+  
+
+  bullets.bounceOff(alienGroup,destroyAlien)
+
 
   spawnAlien();
   drawSprites();
@@ -80,14 +107,18 @@ if(ground.x<400){
 
   text("Score: "+ score, 80,80);
   text("lives: "+ lives, 900,80);
+
+  if(lives <= 0){
+    gameOver()
+  }
 }
 
 function spawnAlien()
 {
 
-  if (frameCount % 60 === 0)
+  if (frameCount % 65 === 0)
  {
-  var xRand = Math.round(random(800,1000));
+  var xRand = Math.round(random(900,1000));
   var yRand = Math.round(random(100,600));
 
    alien = createSprite(xRand,yRand,60,60)
@@ -95,7 +126,7 @@ function spawnAlien()
    alien.velocityX = -3;
    alien.debug = true;
    alienGroup.add(alien);
-
+   alien.setCollider("circle",0,0,30)
     //generate random obstacles
     var rand = Math.round(random(1,3));
     switch(rand) 
@@ -117,6 +148,23 @@ function spawnAlien()
  }
 }
 
+function destroyAlien(bullets,alien){
+  alien.remove()
+}
+
+function gameOver(){
+  alienGroup.setVelocityXEach(0)
+  ground.velocityX = 0;
+  score = 0;
+
+  textSize(50)
+  fill("blue")
+  //fontType("impact")
+  strokeWeight(3)
+  stroke("cyan")
+  text("GAME  OVER",500,500)
+
+}
  
 
 
